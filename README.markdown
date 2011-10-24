@@ -93,6 +93,9 @@ If you pass in an emitter you'll get the connection object on `"drop"` events so
 you can handle these yourself by writing an error message to the stream. If you
 don't pass in an `opts.emitter`, the connection will be `.destroy()`ed.
 
+`bounce()` returns the stream object that it's using. This is useful if you pass
+in a port so you can `.on('error', fn)` to detect connection errors.
+
 bounce(port, ...), bounce(host, port, ...)
 ------------------------------------------
 
