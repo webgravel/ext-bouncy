@@ -28,21 +28,32 @@ var handler = bouncy.handler = function (cb, c) {
         var stream = new BufferedStream;
         stream.pause();
         
-        function onX (buf) {
+        function onData (buf) {
             stream.write(buf);
         }
-        req.on('rawHead', onX);
-        req.on('rawBody',  onX);
+        
+        req.on('rawHead', onData);
+        req.on('rawBody', onData);
         
         req.on('rawEnd', function () {
-            req.removeListener('rawHead', onX);
-            req.removeListener('rawBody', onX);
+            req.removeListener('rawHead', onData);
+            req.removeListener('rawBody', onData);
         });
         
-        req.on('headers', function () {
+        function onHeaders () {
+            req.removeListener('error', onError);
             var bounce = makeBounce(stream, c, req);
             cb(req, bounce);
-        });
+        }
+        req.on('headers', onHeaders);
+        
+        function onError (err) {
+            req.removeListener('headers', onHeaders);
+            var bounce = makeBounce(stream, c, req);
+            cb(req, bounce);
+            req.emit('error', err);
+        }
+        req.once('error', onError);
     });
 };
 

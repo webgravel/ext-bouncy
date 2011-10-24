@@ -4,13 +4,14 @@ var net = require('net');
 
 test('parse error', function (t) {
     var port = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
-    t.plan(2);
+    t.plan(1);
     var sent = false;
     
     var s = bouncy(function (req, bounce) {
         req.on('error', function (err) {
             t.ok(err.message, 'error parsing method');
             req.socket.end();
+            s.close();
             t.end();
         });
     });
