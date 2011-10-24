@@ -32,12 +32,16 @@ test("make sure keep-alives don't leak", function (t) {
                 ss[0].close();
                 ss[1].close();
                 t.end();
+                sockets.forEach(function (s) { s.end() });
             }
         });
     });
     
+    var sockets = [];
     var ss = [ p1, p2 ].map(function (port, ix) {
         var s = http.createServer(function (req, res) {
+            sockets.push(req.socket);
+            
             t.equal(req.method, 'POST');
             t.equal(req.headers.host, [ 'beep', 'boop' ][ix]);
             t.equal(req.headers.connection, 'keep-alive');
@@ -50,6 +54,10 @@ test("make sure keep-alives don't leak", function (t) {
             
             req.on('end', function () {
                 t.equal(data, 'abcdefghij');
+                
+                req.socket.on('data', function (buf) {
+                    t.fail('data bleeding over');
+                });
                 
                 res.setHeader('content-type', 'text/plain');
                 res.setHeader('connection', 'keep-alive');
@@ -83,7 +91,7 @@ function request (port, t, cb) {
             'Connection: keep-alive',
             'Transfer-Encoding: chunked',
             '',
-            '',
+            ''
         ].join('\r\n'));
         
         var chunks = [
@@ -119,9 +127,6 @@ function request (port, t, cb) {
                 }
                 else if (mode === 'body' && lines[lines.length-2] === '0\r') {
                     c.removeListener('data', onData);
-                    c.on('data', function (buf) {
-                        t.fail('data from other requests bleeding over');
-                    });
                     
                     function upcase (s) { return s.toUpperCase() }
                     

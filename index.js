@@ -34,7 +34,7 @@ var handler = bouncy.handler = function (cb, c) {
         req.on('rawHead', onX);
         req.on('rawBody',  onX);
         
-        req.on('end', function () {
+        req.on('rawEnd', function () {
             req.removeListener('rawHead', onX);
             req.removeListener('rawBody', onX);
         });
