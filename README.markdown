@@ -72,6 +72,8 @@ req
 
 The node http module request object.
 
+To catch parse errors, listen for the "error" event.
+
 bounce(stream, opts={})
 -----------------------
 
