@@ -9,18 +9,19 @@ test('POST with http', function (t) {
     var s = bouncy(function (req, bounce) {
         t.equal(req.headers.host, 'localhost:' + port);
         
-        var data = '';
         var alive = true;
         
         var stream = new Stream;
         stream.writable = true;
         stream.readable = true;
         
+        var data = '';
         stream.write = function (buf) {
             data += buf.toString();
+            
             if (alive && data.match(/pow!/)) {
                 t.ok(true, 'got post data');
-                stream.end();
+                stream.emit('end');
                 alive = false;
             }
         };
@@ -34,8 +35,6 @@ test('POST with http', function (t) {
             '',
             'oh hello'
         ].join('\r\n'));
-        
-        stream.emit('end');
     });
     
     s.listen(port, function () {
@@ -51,12 +50,13 @@ test('POST with http', function (t) {
             var data = '';
             res.on('data', function (buf) {
                 data += buf.toString();
-                if (data === 'oh hello') {
-                    t.equal(data, 'oh hello');
-                    res.socket.end();
-                    s.close();
-                    t.end();
-                }
+            });
+            
+            res.on('end', function () {
+                t.equal(data, 'oh hello');
+                res.socket.end();
+                s.close();
+                t.end();
             });
         });
         req.write('pow!');
