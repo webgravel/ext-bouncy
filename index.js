@@ -76,6 +76,8 @@ function makeBounce (bs, client, req) {
         else {
             opts.emitter.emit('drop', client);
         }
+        
+        return stream;
     };
     
     bounce.respond = function () {

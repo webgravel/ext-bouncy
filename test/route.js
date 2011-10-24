@@ -5,7 +5,7 @@ var bouncy = require('../');
 
 test('bounce', function (t) {
     var iters = 50;
-    t.plan(3 * iters);
+    t.plan(4 * iters);
     
     var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s0 = http.createServer(function (req, res) {
@@ -26,10 +26,12 @@ test('bounce', function (t) {
     var p2 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s2 = bouncy(function (req, bounce) {
         if (req.headers.host === 'beep.example.com') {
-            bounce(p0);
+            var s = bounce(p0);
+            t.ok(s instanceof net.Stream, 'bounce() returns a stream');
         }
         else if (req.headers.host === 'boop.example.com') {
-            bounce(p1);
+            var s = bounce(p1);
+            t.ok(s instanceof net.Stream, 'bounce() returns a stream');
         }
         else {
             t.fail(req.headers.host);
