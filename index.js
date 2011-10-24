@@ -69,8 +69,13 @@ function makeBounce (bs, client, req) {
         
         insertHeaders(bs.chunks, opts.headers);
         
-        if (stream.writable) bs.pipe(stream);
-        if (client.writable) stream.pipe(client);
+        if (stream.writable && client.writable) {
+            bs.pipe(stream);
+            stream.pipe(client);
+        }
+        else {
+            opts.emitter.emit('drop', client);
+        }
     };
     
     bounce.respond = function () {
