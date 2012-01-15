@@ -82,6 +82,9 @@ Call this function when you're ready to bounce the request to a stream.
 The exact request that was received will be written to `stream` and future
 incoming data will be piped to and from it.
 
+To send data to a different url path on the destination stream, you can specify
+`opts.path`.
+
 You can specify header fields to insert into the request with `opts.headers`.
 
 By default, `"x-forwarded-for"`, `"x-forwarded-port"`, and `"x-forwarded-proto"`
@@ -98,8 +101,8 @@ don't pass in an `opts.emitter`, the connection will be `.destroy()`ed.
 `bounce()` returns the stream object that it's using. This is useful if you pass
 in a port so you can `.on('error', fn)` to detect connection errors.
 
-bounce(port, ...), bounce(host, port, ...)
-------------------------------------------
+bounce(port, ...), bounce(host, port, ...), bounce(url)
+-------------------------------------------------------
 
 These variants of `bounce()` are sugar for
 `bounce(net.createConnection(port))`
@@ -107,6 +110,9 @@ and
 `bounce(net.createConnection(port, host))`.
 
 Optionally you can pass port and host keys to `opts` and it does the same thing.
+
+Passing `bounce()` a string that looks like a url (with or without `"http://"`)
+will set the opts.host, opts.port, and opts.path accordingly.
 
 bounce.respond()
 ----------------
