@@ -92,7 +92,7 @@ function makeBounce (bs, client, req) {
             bs.pipe(stream);
             stream.pipe(client);
         }
-        else {
+        else if (opts.emitter) {
             opts.emitter.emit('drop', client);
         }
         
