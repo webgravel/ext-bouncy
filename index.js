@@ -49,6 +49,8 @@ var handler = bouncy.handler = function (cb, c) {
         
         function onHeaders () {
             req.removeListener('error', onError);
+            // don't kill the server on subsequent request errors
+            req.on('error', function () {});
             var bounce = makeBounce(stream, c, req);
             cb(req, bounce);
         }
@@ -95,6 +97,14 @@ function makeBounce (bs, client, req) {
         else if (opts.emitter) {
             opts.emitter.emit('drop', client);
         }
+        
+        stream.on('error', function (err) {
+            if (stream.listeners('error').length === 1) {
+                // destroy the request and stream if nobody is listening
+                req.destroy();
+                stream.destroy();
+            }
+        });
         
         return stream;
     };
