@@ -21,7 +21,11 @@ bouncy(function (req, bounce) {
     }
     
     req.on('error', onerror);
-    function onerror (err) { req.destroy() }
+    function onerror (err) {
+        var res = bounce.respond();
+        res.statusCode = 500;
+        res.end('error\r\n');
+    }
     
     if (typeof route === 'string') {
         var s = route.split(':');
