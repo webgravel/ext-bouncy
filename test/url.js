@@ -1,5 +1,5 @@
 var test = require('tap').test;
-var updateUrl = require('../lib/update_url');
+var updatePath = require('../lib/update_path');
 var chunky = require('chunky');
 
 test('update url', function (t) {
@@ -15,7 +15,7 @@ test('update url', function (t) {
     for (var i = 0; i < times; i++) {
         var chunks = chunky(msg);
         
-        var n = updateUrl(chunks, '/boop');
+        var n = updatePath(chunks, '/boop');
         t.equal(n, '/beepity'.length - '/boop'.length);
         t.equal(
             chunks.map(String).join(''),
