@@ -3,7 +3,7 @@ var updateUrl = require('../lib/update_url');
 var chunky = require('chunky');
 
 test('update url', function (t) {
-    var times = 1;
+    var times = 50;
     t.plan(times * 2);
     var msg = new Buffer([
         'POST /beepity HTTP/1.1',
@@ -19,7 +19,7 @@ test('update url', function (t) {
         t.equal(n, '/beepity'.length - '/boop'.length);
         t.equal(
             chunks.map(String).join(''),
-            msg.toString().replace(/\/beepity/, '/boop')
+            msg.toString().replace('/beepity', '/boop')
         );
     }
     t.end();
