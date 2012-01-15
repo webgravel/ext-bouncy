@@ -2,7 +2,13 @@ var test = require('tap').test;
 var http = require('http');
 var bouncy = require('../');
 
-test('bounce url', function (t) {
+test('bounce opts.path', function (t) {
+    testUrl(t, function (port, req, bounce) {
+        bounce({ port : port, path : '/rewritten' });
+    });
+});
+
+function testUrl (t, bouncer) {
     t.plan(4);
     
     var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
@@ -15,9 +21,7 @@ test('bounce url', function (t) {
     s0.listen(p0, connect);
     
     var p1 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
-    var s1 = bouncy(function (req, bounce) {
-        bounce({ port : p0, path : '/rewritten' });
-    });
+    var s1 = bouncy(bouncer.bind(null, p0));
     s1.listen(p1, connect);
     
     var connected = 0;
@@ -47,4 +51,4 @@ test('bounce url', function (t) {
         });
         req.end();
     }
-});
+}
