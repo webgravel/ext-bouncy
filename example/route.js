@@ -7,7 +7,4 @@ bouncy(function (req, bounce) {
     else if (req.headers.host === 'boop.example.com') {
         bounce(8002);
     }
-    
-    req.on('error', onerror);
-    function onerror () { req.destroy() }
 }).listen(8000);
