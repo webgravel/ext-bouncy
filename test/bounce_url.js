@@ -26,6 +26,12 @@ test('bounce opts.path with a non-http abbreviated url', function (t) {
     });
 });
 
+test('bounce opts.path with a full url', function (t) {
+    testUrl(t, function (port, req, bounce) {
+        bounce('http://localhost:' + port + '/rewritten');
+    });
+});
+
 function testUrl (t, bouncer) {
     t.plan(4);
     
