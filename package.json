@@ -37,7 +37,7 @@
         "tap" : "0.0.x",
         "lazy" : "1.0.x",
         "websocket-server" : "1.4.x",
-        "websocket-client" : "1.0.x",
+        "wsclient" : "0.2.x",
         "chunky" : "0.0.x"
     },
     "engines" : {
