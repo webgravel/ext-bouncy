@@ -136,3 +136,12 @@ license
 MIT/X11
 
 ![jumping](http://substack.net/images/jumping.png)
+
+tests
+=====
+
+With [npm](http://npmjs.org), do:
+
+    npm test
+
+[![build status](https://secure.travis-ci.org/substack/bouncy.png)](http://travis-ci.org/substack/bouncy)
