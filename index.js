@@ -4,6 +4,7 @@ var parsley = require('parsley');
 var BufferedStream = require('morestreams').BufferedStream;
 
 var insertHeaders = require('./lib/insert_headers');
+var updatePath = require('./lib/update_path');
 var parseArgs = require('./lib/parse_args');
 
 var net = require('net');
@@ -85,6 +86,7 @@ function makeBounce (bs, client, req) {
         }
         
         insertHeaders(bs.chunks, opts.headers);
+        if (opts.path) updatePath(bs.chunks, opts.path);
         
         if (stream.writable && client.writable) {
             bs.pipe(stream);
