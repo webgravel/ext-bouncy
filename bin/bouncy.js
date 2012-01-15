@@ -20,21 +20,20 @@ bouncy(function (req, bounce) {
         route = route[Math.floor(Math.random() * route.length)];
     }
     
-    req.on('error', function(err) {
-        req.destroy();
-    });
+    req.on('error', onerror);
+    function onerror (err) { req.destroy() }
     
     if (typeof route === 'string') {
         var s = route.split(':');
         if (s[1]) {
-            bounce(s[0], s[1]);
+            bounce(s[0], s[1]).on('error', onerror);
         }
         else {
-            bounce(s);
+            bounce(s).on('error', onerror);
         }
     }
     else if (route) {
-        bounce(route);
+        bounce(route).on('error', onerror);
     }
     else {
         var res = bounce.respond();
