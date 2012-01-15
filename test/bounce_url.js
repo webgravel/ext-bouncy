@@ -14,6 +14,12 @@ test('bounce opts.path with separate port', function (t) {
     });
 });
 
+test('bounce opts.path with a shorthand url', function (t) {
+    testUrl(t, function (port, req, bounce) {
+        bounce(':' + port + '/rewritten');
+    });
+});
+
 function testUrl (t, bouncer) {
     t.plan(4);
     
