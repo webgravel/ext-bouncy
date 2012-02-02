@@ -32,12 +32,19 @@ test('bounce opts.path with a full url', function (t) {
     });
 });
 
-function testUrl (t, bouncer) {
+test('bounce with a root path', function (t) {
+    testUrl(t, function (port, req, bounce) {
+        bounce(':' + port + '/');
+    });
+});
+
+function testUrl (t, bouncer, target) {
     t.plan(4);
+    if (!target) target = '/rewritten';
     
     var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s0 = http.createServer(function (req, res) {
-        t.equal(req.url, '/rewritten');
+        t.equal(req.url, target);
         res.setHeader('content-type', 'text/plain');
         res.write('beep boop');
         res.end();
