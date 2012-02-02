@@ -35,7 +35,7 @@ test('bounce opts.path with a full url', function (t) {
 test('bounce with a root path', function (t) {
     testUrl(t, function (port, req, bounce) {
         bounce(':' + port + '/');
-    });
+    }, '/');
 });
 
 function testUrl (t, bouncer, target) {
