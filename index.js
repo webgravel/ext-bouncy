@@ -109,7 +109,7 @@ function makeBounce (bs, client, req, parser) {
         return stream;
     };
     
-    bounce.buffers = bs;
+    bounce.stream = bs;
     bounce.parser = parser;
     bounce.upgrade = parser.upgrade.bind(parser);
     

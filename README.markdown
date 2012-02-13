@@ -133,10 +133,11 @@ bounce.parser
 
 The [parsley](https://github.com/substack/node-parsley) parser being used.
 
-bounce.buffers
---------------
+bounce.stream
+-------------
 
-The raw buffered buffers.
+The [buffered stream](https://github.com/mikeal/morestreams) used to buffer the
+headers and body until bounce() is called.
 
 install
 =======
