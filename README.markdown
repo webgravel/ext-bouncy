@@ -119,6 +119,25 @@ bounce.respond()
 Return a new HTTP response object for the request.
 This is useful if you need to write an error result.
 
+bounce.upgrade()
+----------------
+
+Manually upgrade the connection using
+[parsley](https://github.com/substack/node-parsley).
+
+attributes
+==========
+
+bounce.parser
+-------------
+
+The [parsley](https://github.com/substack/node-parsley) parser being used.
+
+bounce.buffers
+--------------
+
+The raw buffered buffers.
+
 install
 =======
 
