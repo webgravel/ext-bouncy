@@ -113,6 +113,10 @@ function makeBounce (bs, client, req, parser) {
     bounce.parser = parser;
     bounce.upgrade = parser.upgrade.bind(parser);
     
+    bounce.reset = function () {
+        bs.chunks = [];
+    };
+    
     bounce.respond = function () {
         var res = new ServerResponse(req);
         res.assignSocket(client);

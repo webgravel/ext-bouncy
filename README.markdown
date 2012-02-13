@@ -125,6 +125,11 @@ bounce.upgrade()
 Manually upgrade the connection using
 [parsley](https://github.com/substack/node-parsley).
 
+bounce.reset()
+--------------
+
+Discard all buffered data. This is sometimes useful for upgraded connections.
+
 attributes
 ==========
 
