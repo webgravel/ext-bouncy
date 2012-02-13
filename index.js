@@ -25,7 +25,7 @@ var bouncy = module.exports = function (opts, cb) {
 };
 
 var handler = bouncy.handler = function (cb, c) {
-    parsley(c, function (req) {
+    var parser = parsley(c, function (req) {
         c.setMaxListeners(0);
         
         var stream = new BufferedStream;
@@ -51,14 +51,14 @@ var handler = bouncy.handler = function (cb, c) {
             req.removeListener('error', onError);
             // don't kill the server on subsequent request errors
             req.on('error', function () {});
-            var bounce = makeBounce(stream, c, req);
+            var bounce = makeBounce(stream, c, req, parser);
             cb(req, bounce);
         }
         req.on('headers', onHeaders);
         
         function onError (err) {
             req.removeListener('headers', onHeaders);
-            var bounce = makeBounce(stream, c, req);
+            var bounce = makeBounce(stream, c, req, parser);
             cb(req, bounce);
             req.emit('error', err);
         }
@@ -66,7 +66,7 @@ var handler = bouncy.handler = function (cb, c) {
     });
 };
 
-function makeBounce (bs, client, req) {
+function makeBounce (bs, client, req, parser) {
     var bounce = function (stream, opts) {
         if (!stream || !stream.write) {
             opts = parseArgs(arguments);
@@ -108,6 +108,9 @@ function makeBounce (bs, client, req) {
         
         return stream;
     };
+    
+    bounce.parser = parser;
+    bounce.upgrade = parser.upgrade.bind(parser);
     
     bounce.respond = function () {
         var res = new ServerResponse(req);

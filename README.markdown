@@ -9,6 +9,8 @@ with the simple command-line tool.
 
 Bouncy is websocket and tls (https) capable.
 
+[![build status](https://secure.travis-ci.org/substack/bouncy.png)](http://travis-ci.org/substack/bouncy)
+
 ![trampoline](http://substack.net/images/trampoline.png)
 
 example
@@ -143,5 +145,3 @@ tests
 With [npm](http://npmjs.org), do:
 
     npm test
-
-[![build status](https://secure.travis-ci.org/substack/bouncy.png)](http://travis-ci.org/substack/bouncy)
