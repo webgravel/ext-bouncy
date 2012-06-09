@@ -34,7 +34,7 @@
         "morestreams" : "0.0.2"
     },
     "devDependencies" : {
-        "tap" : "0.0.x",
+        "tap" : "~0.2.5",
         "lazy" : "1.0.x",
         "websocket-server" : "1.4.x",
         "wsclient" : "0.2.x",
