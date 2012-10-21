@@ -24,9 +24,11 @@ var bs = bouncy(function (req, bounce) {
 bs.listen(0, listening);
 var bport = bs.address().port;
 
+var batchSize = 400;
+
 function flurry (t, cb) {
-    var pending = 50;
-    for (var i = 0; i < 50; i++) {
+    var pending = batchSize;
+    for (var i = 0; i < batchSize; i++) {
         check(t, function () {
             if (--pending === 0) cb();
         });
@@ -35,7 +37,7 @@ function flurry (t, cb) {
 
 function runTest () {
     test('check for leaks', function (t) {
-        t.plan(50 * 2 + 1);
+        t.plan(batchSize * 2 + 1);
         
         flurry(t, function () {
             var baseline = process.memoryUsage();
