@@ -113,6 +113,7 @@ function request (port, t, cb) {
         
         var lines = [''];
         var mode = 'header';
+        var headerIndex;
         
         c.on('data', function onData (buf) {
             for (var i = 0; i < buf.length; i++) {
@@ -123,22 +124,16 @@ function request (port, t, cb) {
                 
                 lines.push('');
                 if (mode === 'header' && lines[lines.length-2] === '\r') {
+                    headerIndex = lines.length - 1;
                     mode = 'body';
                 }
                 else if (mode === 'body' && lines[lines.length-2] === '0\r') {
                     c.removeListener('data', onData);
                     
-                    function upcase (s) { return s.toUpperCase() }
-                    
                     t.ok(finished);
-                    t.deepEqual(lines.slice(0,4).map(upcase).sort(), [
-                        'HTTP/1.1 200 OK\r',
-                        'Content-Type: text/plain\r',
-                        'Transfer-Encoding: chunked\r',
-                        'Connection: keep-alive\r',
-                    ].sort().map(upcase));
+                    t.equal(lines[0].trim(), 'HTTP/1.1 200 OK');
                     
-                    t.deepEqual(lines.slice(4), [
+                    t.deepEqual(lines.slice(headerIndex - 1), [
                         '\r',
                         '2\r',
                         'oh\r',
