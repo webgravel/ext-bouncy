@@ -1,6 +1,6 @@
 # bouncy
 
-route http requests to other hosts
+route http requests to incoming http servers
 
 bouncy uses [http-raw](http://github.com/substack/http-raw) to extend the core
 node http apis with fully transparent streaming without resulting to

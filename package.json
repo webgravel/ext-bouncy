@@ -1,6 +1,6 @@
 {
     "name" : "bouncy",
-    "description" : "Bounce HTTP requests around for a load balancer or http host router completely transparently",
+    "description" : "route incoming http requests to http servers",
     "version" : "2.0.0",
     "repository" : {
         "type" : "git",
@@ -12,14 +12,10 @@
     },
     "keywords" : [
         "http",
-        "parse",
-        "bounce",
-        "load",
-        "balancer",
-        "host",
-        "route",
+        "proxy",
         "router",
-        "transparent"
+        "load",
+        "balancer"
     ],
     "scripts" : {
         "test" : "tap test/*.js"
