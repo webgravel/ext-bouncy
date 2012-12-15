@@ -27,6 +27,10 @@ test('write() on an unwritable stream', function (t) {
             '',
             'oh hello'
         ].join('\r\n'));
+        
+        setTimeout(function () {
+            stream.destroy();
+        }, 200);
     });
     
     s.listen(port, function () {
