@@ -34,7 +34,6 @@ test('raw with a host', function (t) {
             }, 80);
             setTimeout(function () {
                 c.end();
-                t.end();
             }, 100);
         });
     });
