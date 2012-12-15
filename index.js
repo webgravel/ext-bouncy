@@ -21,7 +21,10 @@ var bouncy = module.exports = function (opts, cb) {
     
     var server = createServer(function (req, res) {
         var bounce = makeBounce(req, res);
-        cb(req, bounce);
+        if (cb.length === 3) {
+            cb(req, res, bounce);
+        }
+        else cb(req, bounce);
     });
     
     server.on('upgrade', function (req, sock, buf) {
