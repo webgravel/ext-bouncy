@@ -98,43 +98,20 @@ Optionally you can pass port and host keys to `opts` and it does the same thing.
 Passing `bounce()` a string that looks like a url (with or without `"http://"`)
 will set the opts.host, opts.port, and opts.path accordingly.
 
-attributes
-==========
+# install
 
-bounce.parser
--------------
+With [npm](http://npmjs.org), to get the library do:
 
-The [parsley](https://github.com/substack/node-parsley) parser being used.
+```
+npm install bouncy
+```
 
-bounce.stream
--------------
+or to install the command-line tool do:
 
-The [buffered stream](https://github.com/mikeal/morestreams) used to buffer the
-headers and body until bounce() is called.
+```
+npm install -g bouncy
+```
 
-install
-=======
+# license
 
-With [npm](http://npmjs.org), do:
-
-    npm install bouncy
-
-to install as a library or
-
-    npm install -g bouncy
-
-to get the command-line tool.
-
-license
-=======
-
-MIT/X11
-
-![jumping](http://substack.net/images/jumping.png)
-
-tests
-=====
-
-With [npm](http://npmjs.org), do:
-
-    npm test
+MIT

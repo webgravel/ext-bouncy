@@ -1,5 +1,4 @@
 var httpRaw = require('http-raw');
-var BufferedStream = require('morestreams').BufferedStream;
 
 var insertHeaders = require('./lib/insert_headers');
 var updatePath = require('./lib/update_path');
