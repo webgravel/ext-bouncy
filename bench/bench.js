@@ -3,10 +3,15 @@ var http = require('http');
 var p0 = 7500;
 var p1 = 7501;
 
+var giganticBuffer = new Buffer(1024 * 1024 * 4); // 4M buffer
+
 var name = process.argv[3];
 var server = {
     simple : http.createServer(function (req, res) {
         res.end('beepity boop');
+    }),
+    big : http.createServer(function (req, res) {
+        res.end(giganticBuffer);
     }),
 }[process.argv[2]];
 server.listen(p1);
