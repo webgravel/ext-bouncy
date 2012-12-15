@@ -12,7 +12,9 @@ test('insert headers', function (t) {
     
     for (var i = 0; i < 50; i++) {
         var bufs = splitUp(msg);
-        t.equal(bufs.map(String).join(''), msg);
+        t.equal(bufs.map(function (b) {
+            return String(b[0].slice(b[1],b[2]));
+        }).join(''), msg);
         
         var bufs_ = bufs.slice();
         
@@ -33,8 +35,18 @@ function splitUp (msg) {
         j <= msg.length;
         j += Math.floor(Math.random() * (msg.length - j + 1))
     ) {
-        var s = msg.slice(i, j);
-        bufs.push(new Buffer(s));
+        var s = new Buffer(msg.slice(i, j));
+        var start = Math.floor(10 * Math.random());
+        var end = start + s.length;
+        var trailing = Math.floor(10 * Math.random());
+        
+        var buf = new Buffer(end + trailing);
+        
+        for (var k = start; k < end; k++) {
+            buf[k] = s[k - start];
+        }
+        
+        bufs.push([ buf, start, end ]);
         i = j;
         if (j === msg.length) break;
     }
