@@ -3,21 +3,25 @@ var http = require('http');
 var p0 = 7500;
 var p1 = 7501;
 
-var giganticBuffer = new Buffer(1024 * 1024 * 4); // 4M buffer
-
 var name = process.argv[3];
 var server = {
     simple : http.createServer(function (req, res) {
         res.end('beepity boop');
     }),
-    big : http.createServer(function (req, res) {
-        res.end(giganticBuffer);
-    }),
+    big : (function () {
+        var giganticBuffer = new Buffer(1024 * 1024 * 4);
+        
+        return http.createServer(function (req, res) {
+            res.end(giganticBuffer);
+        })
+    })(),
 }[process.argv[2]];
 server.listen(p1);
 
-var proxy = require('./' + name)(p1);
-proxy.listen(p0);
+if (name) {
+    var proxy = require('./' + name)(p1);
+    proxy.listen(p0);
+}
 
 console.log('ab -n 5000 -c 10 http://localhost:' + p0 + '/');
 
