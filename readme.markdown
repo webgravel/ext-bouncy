@@ -1,41 +1,41 @@
-bouncy
-======
+# bouncy
 
-Bouncy uses node's http parser innards to bounce http requests around to where
-they need to go in an entirely transparent way.
+route http requests to other hosts
 
-Use bouncy as a load balancer or http host router, either programmatically or
-with the simple command-line tool.
-
-Bouncy is websocket and tls (https) capable.
+bouncy uses [http-raw](http://github.com/substack/http-raw) to extend the core
+node http apis with fully transparent streaming without resulting to
+re-normalizing the requests.
 
 [![build status](https://secure.travis-ci.org/substack/bouncy.png)](http://travis-ci.org/substack/bouncy)
 
 ![trampoline](http://substack.net/images/trampoline.png)
 
-example
-=======
+# example
 
-route.js
---------
+## route.js
 
 Route requests based on the host field
 
-````javascript
+``` js
 var bouncy = require('bouncy');
 
-bouncy(function (req, bounce) {
+var server = bouncy(function (req, res, bounce) {
     if (req.headers.host === 'beep.example.com') {
         bounce(8001);
     }
     else if (req.headers.host === 'boop.example.com') {
         bounce(8002);
     }
-}).listen(8000);
-````
+    else {
+        res.statusCode = 404;
+        res.end('no such host');
+    }
+});
+server.listen(8000);
+```
 
-command-line
-============
+
+# command-line
 
 Just create a `routes.json` file like this:
 

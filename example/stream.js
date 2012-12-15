@@ -1,6 +1,6 @@
 // bounce requests to :8001 along to :8000
 
-var bouncy = require('bouncy');
+var bouncy = require('../');
 var net = require('net');
 
 bouncy(function (req, bounce) {

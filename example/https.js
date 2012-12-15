@@ -4,7 +4,7 @@ var opts = {
     cert : fs.readFileSync(__dirname + '/https/certificate.pem')
 };
 
-var bouncy = require('bouncy');
+var bouncy = require('../');
 bouncy(opts, function (req, bounce) {
     bounce(9000);
 }).listen(7005);
