@@ -5,9 +5,6 @@ var insertHeaders = require('./lib/insert_headers');
 var updatePath = require('./lib/update_path');
 var parseArgs = require('./lib/parse_args');
 
-var net = require('net');
-var tls = require('tls');
-
 var bouncy = module.exports = function (opts, cb) {
     if (typeof opts === 'function') {
         cb = opts;
