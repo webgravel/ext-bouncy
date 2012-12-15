@@ -49,7 +49,7 @@ function makeBounce (req, res) {
                 req.connection.encrypted ? 'https' : 'http';
         }
         
-        //insertHeaders(bs.chunks, opts.headers);
+        insertHeaders(bs.buffers, opts.headers);
         if (opts.path) updatePath(bs.buffers, opts.path);
         
         if (stream.writable) {
