@@ -1,6 +1,4 @@
-var http = require('http');
-var ServerResponse = http.ServerResponse;
-var parsley = require('parsley');
+var createServer = require('http-raw');
 var BufferedStream = require('morestreams').BufferedStream;
 
 var insertHeaders = require('./lib/insert_headers');
@@ -17,57 +15,21 @@ var bouncy = module.exports = function (opts, cb) {
     }
     
     if (opts && opts.key && opts.cert) {
-        return tls.createServer(opts, handler.bind(null, cb));
+        throw new Error('not supported');
     }
     else {
-        return net.createServer(handler.bind(null, cb));
+        return createServer(function (req, res) {
+            var bounce = makeBounce(req, res);
+            cb(req, bounce);
+        });
     }
 };
 
-var handler = bouncy.handler = function (cb, c) {
-    var parser = parsley(c, function (req) {
-        c.setMaxListeners(0);
-        
-        var stream = new BufferedStream;
-        stream.pause();
-        
-        function onData (buf) {
-            stream.write(buf);
-        }
-        
-        req.socket.on('close', function() {
-           stream.end(); 
-        });
 
-        req.on('rawHead', onData);
-        req.on('rawBody', onData);
-        
-        req.on('rawEnd', function () {
-            req.removeListener('rawHead', onData);
-            req.removeListener('rawBody', onData);
-        });
-        
-        function onHeaders () {
-            req.removeListener('error', onError);
-            // don't kill the server on subsequent request errors
-            req.on('error', function () {});
-            var bounce = makeBounce(stream, c, req, parser);
-            cb(req, bounce);
-        }
-        req.on('headers', onHeaders);
-        
-        function onError (err) {
-            req.removeListener('headers', onHeaders);
-            var bounce = makeBounce(stream, c, req, parser);
-            cb(req, bounce);
-            req.emit('error', err);
-        }
-        req.once('error', onError);
-    });
-};
-
-function makeBounce (bs, client, req, parser) {
+function makeBounce (req, res) {
     var bounce = function (stream, opts) {
+        var bs = req.createRawStream();
+        
         if (!stream || !stream.write) {
             opts = parseArgs(arguments);
             stream = opts.stream;
@@ -76,7 +38,7 @@ function makeBounce (bs, client, req, parser) {
         
         if (!opts.headers) opts.headers = {};
         if (!('x-forwarded-for' in opts.headers)) {
-            opts.headers['x-forwarded-for'] = client.remoteAddress;
+            opts.headers['x-forwarded-for'] = req.connection.remoteAddress;
         }
         if (!('x-forwarded-port' in opts.headers)) {
             var m = (req.headers.host || '').match(/:(\d+)/);
@@ -84,18 +46,18 @@ function makeBounce (bs, client, req, parser) {
         }
         if (!('x-forwarded-proto' in opts.headers)) {
             opts.headers['x-forwarded-proto'] =
-                client.encrypted ? 'https' : 'http';
+                req.connection.encrypted ? 'https' : 'http';
         }
         
-        insertHeaders(bs.chunks, opts.headers);
-        if (opts.path) updatePath(bs.chunks, opts.path);
+        //insertHeaders(bs.chunks, opts.headers);
+        if (opts.path) updatePath(bs.buffers, opts.path);
         
-        if (stream.writable && client.writable) {
+        if (stream.writable) {
             bs.pipe(stream);
-            stream.pipe(client);
+            stream.pipe(bs);
         }
         else if (opts.emitter) {
-            opts.emitter.emit('drop', client);
+            opts.emitter.emit('drop', bs);
         }
         
         stream.on('error', function (err) {
@@ -106,24 +68,19 @@ function makeBounce (bs, client, req, parser) {
             }
         });
         
+        stream.on('close', function () {
+            _onclose.forEach(function (fn) { fn() });
+        });
+        
         return stream;
     };
     
-    bounce.stream = bs;
-    bounce.parser = parser;
-    bounce.upgrade = parser.upgrade.bind(parser);
-    
-    bounce.reset = function () {
-        bs.chunks = [];
+    var _onclose = [];
+    bounce._onclose = function (fn) {
+        _onclose.push(fn);
     };
     
     bounce.respond = function () {
-        var res = new ServerResponse(req);
-        res.assignSocket(client);
-        res.on('finish', function () {
-            res.detachSocket(client);
-            client.destroySoon();
-        });
         return res;
     };
     
