@@ -1,4 +1,4 @@
-var createServer = require('http-raw');
+var httpRaw = require('http-raw');
 var BufferedStream = require('morestreams').BufferedStream;
 
 var insertHeaders = require('./lib/insert_headers');
@@ -14,24 +14,24 @@ var bouncy = module.exports = function (opts, cb) {
         opts = {};
     }
     
-    if (opts && opts.key && opts.cert) {
-        throw new Error('not supported');
-    }
-    else {
-        var server = createServer(function (req, res) {
-            var bounce = makeBounce(req, res);
+    var createServer = opts && opts.key && opts.cert
+        ? function (cb_) { return httpRaw.https(opts, cb_) }
+        : httpRaw.http
+    ;
+    
+    var server = createServer(function (req, res) {
+        var bounce = makeBounce(req, res);
+        cb(req, bounce);
+    });
+    
+    server.on('upgrade', function (req, sock, buf) {
+        if (req.headers.upgrade || req.method === 'CONNECT') {
+            var bounce = makeBounce(req, sock);
             cb(req, bounce);
-        });
-        
-        server.on('upgrade', function (req, sock, buf) {
-            if (req.headers.upgrade || req.method === 'CONNECT') {
-                var bounce = makeBounce(req, sock);
-                cb(req, bounce);
-            }
-        });
-        
-        return server;
-    }
+        }
+    });
+    
+    return server;
 };
 
 
