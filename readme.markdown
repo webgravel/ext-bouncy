@@ -5,6 +5,9 @@ route http requests to incoming http servers
 bouncy uses [http-raw](http://github.com/substack/http-raw) to extend the core
 node http apis with fully transparent streaming without resulting to
 re-normalizing the requests.
+Because bouncy doesn't touch the underlying data except to insert
+`x-forwarded-for` headers, upgraded connections like websockets just work
+without doing anything special.
 
 [![build status](https://secure.travis-ci.org/substack/bouncy.png)](http://travis-ci.org/substack/bouncy)
 
