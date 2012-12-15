@@ -10,8 +10,8 @@ if (!configFile || !port) {
 var fs = require('fs');
 var config = JSON.parse(fs.readFileSync(configFile));
 
-var bouncy = require('bouncy');
-bouncy(function (req, bounce) {
+var bouncy = require('../');
+var server = bouncy(function (req, res, bounce) {
     var host = (req.headers.host || '').replace(/:\d+$/, '');
     var route = config[host] || config[''];
     
@@ -22,27 +22,27 @@ bouncy(function (req, bounce) {
     
     req.on('error', onerror);
     function onerror (err) {
-        var res = bounce.respond();
         res.statusCode = 500;
-        res.end('error\r\n');
+        res.setHeader('content-type', 'text/plain');
+        res.end(String(err) + '\r\n');
     }
     
     if (typeof route === 'string') {
         var s = route.split(':');
-        if (s[1]) {
-            bounce(s[0], s[1]).on('error', onerror);
-        }
-        else {
-            bounce(s).on('error', onerror);
-        }
+        var b = s[1]
+            ? bounce(s[0], s[1])
+            : bounce(s)
+        ;
+        b.on('error', onerror);
     }
     else if (route) {
         bounce(route).on('error', onerror);
     }
     else {
-        var res = bounce.respond();
         res.statusCode = 404;
-        res.write('no such host');
+        res.setHeader('content-type', 'text/plain');
+        res.write('host not found\r\n');
         res.end();
     }
-}).listen(port);
+});
+server.listen(port);
