@@ -39,9 +39,6 @@
         "wsclient" : "~0.2.0",
         "chunky" : "~0.0.0"
     },
-    "engines" : {
-        "node" : ">=0.4.0"
-    },
     "license" : "MIT",
     "author" : {
         "name" : "James Halliday",
