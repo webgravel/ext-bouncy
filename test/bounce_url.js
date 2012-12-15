@@ -8,6 +8,7 @@ test('bounce opts.path', function (t) {
     });
 });
 
+/*
 test('bounce opts.path with separate port', function (t) {
     testUrl(t, function (port, req, bounce) {
         bounce(port, { path : '/rewritten' });
@@ -37,6 +38,7 @@ test('bounce with a root path', function (t) {
         bounce(':' + port + '/');
     }, '/');
 });
+*/
 
 function testUrl (t, bouncer, target) {
     t.plan(4);
