@@ -92,9 +92,5 @@ function makeBounce (req, res) {
         _onclose.push(fn);
     };
     
-    bounce.respond = function () {
-        return res;
-    };
-    
     return bounce;
 }

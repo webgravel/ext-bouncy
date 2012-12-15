@@ -49,32 +49,27 @@ Just create a `routes.json` file like this:
 Then point the `bouncy` command at this `routes.json` file and give it a port to
 listen on:
 
-    bouncy routes.json 80
+```
+bouncy routes.json 80
+```
 
 The `routes.json` file should just map host names to host/port combos.
 Use a colon-separated string to specify a host and port in a route.
 
 Use `""` for the host as a default route.
 
-bouncy(opts={}, cb)
-===================
+# var server = bouncy(opts={}, cb)
 
 `bouncy(cb)` returns a new net.Server object that you can `.listen()` on.
 
 If you specify `opts.key` and `opts.cert`, the connection will be set to secure
 mode using tls. Do this if you want to make an https router.
 
-Your callback `cb` will get these arguments:
+If the arity of `cb` is 3, you'll get the response object `res` in
+`cb(req, res, bounce)`.
+Otherwise you just get `cb(req, bounce)`.
 
-req
----
-
-The node http module request object.
-
-To catch parse errors, listen for the "error" event.
-
-bounce(stream, opts={})
------------------------
+## bounce(stream, opts={})
 
 Call this function when you're ready to bounce the request to a stream.
 
@@ -89,46 +84,19 @@ You can specify header fields to insert into the request with `opts.headers`.
 By default, `"x-forwarded-for"`, `"x-forwarded-port"`, and `"x-forwarded-proto"`
 are all automatically inserted into the outgoing header.
 
-You can pass in an EventEmitter on `opts.emitter` to listen for `"drop"` events
-which occur when a `.write()` fails which happens with annoying frequency in
-node v0.4.x.
+`bounce()` returns the stream object that it uses to connect to the remote host.
 
-If you pass in an emitter you'll get the connection object on `"drop"` events so
-you can handle these yourself by writing an error message to the stream. If you
-don't pass in an `opts.emitter`, the connection will be `.destroy()`ed.
-
-`bounce()` returns the stream object that it's using. This is useful if you pass
-in a port so you can `.on('error', fn)` to detect connection errors.
-
-bounce(port, ...), bounce(host, port, ...), bounce(url)
--------------------------------------------------------
+## bounce(port, ...), bounce(host, port, ...), bounce(url)
 
 These variants of `bounce()` are sugar for
-`bounce(net.createConnection(port))`
+`bounce(net.connect(port))`
 and
-`bounce(net.createConnection(port, host))`.
+`bounce(net.connect(port, host))`.
 
 Optionally you can pass port and host keys to `opts` and it does the same thing.
 
 Passing `bounce()` a string that looks like a url (with or without `"http://"`)
 will set the opts.host, opts.port, and opts.path accordingly.
-
-bounce.respond()
-----------------
-
-Return a new HTTP response object for the request.
-This is useful if you need to write an error result.
-
-bounce.upgrade()
-----------------
-
-Manually upgrade the connection using
-[parsley](https://github.com/substack/node-parsley).
-
-bounce.reset()
---------------
-
-Discard all buffered data. This is sometimes useful for upgraded connections.
 
 attributes
 ==========
