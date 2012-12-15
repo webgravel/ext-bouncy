@@ -26,25 +26,14 @@ test('destroy the socket during piping', function (t) {
             c.write('\r\n');
             
             setTimeout(function () {
-                function onerror (err) {
-                    t.equal(
-                        err.message, 'This socket is closed.',
-                        'write to closed socket emits an error'
-                    );
-                }
-                
-                c.once('error', onerror); // node 0.8 emits an error
-                try {
-                    c.write('a=3&b=4');
-                }
-                catch (err) {
-                    onerror(err); // node 0.6 throws
-                }
+                // writing to a closed socket shouldn't throw anymore
+                c.write('a=3&b=4');
             }, 50);
-        });
-        
-        t.on('end', function () {
-            c.end();
+            
+            setTimeout(function () {
+                t.pass();
+                c.end();
+            }, 100);
         });
     });
     
