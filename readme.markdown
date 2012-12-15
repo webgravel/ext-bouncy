@@ -101,6 +101,19 @@ Optionally you can pass port and host keys to `opts` and it does the same thing.
 Passing `bounce()` a string that looks like a url (with or without `"http://"`)
 will set the opts.host, opts.port, and opts.path accordingly.
 
+# benchmark summary
+
+```
+              small message     4M message
+                 (#/sec)          (#/sec)
+           .----------------------------------
+    direct |     2558.10          135.47
+http-proxy |      537.30           36.72
+    bouncy |      522.69           38.03
+```
+
+See bench/ for the complete results.
+
 # install
 
 With [npm](http://npmjs.org), to get the library do:
