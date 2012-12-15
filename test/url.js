@@ -1,6 +1,6 @@
 var test = require('tap').test;
 var updatePath = require('../lib/update_path');
-var chunky = require('chunky');
+var splitUp = require('./lib/split_up');
 
 test('update url', function (t) {
     var times = 50;
@@ -13,12 +13,14 @@ test('update url', function (t) {
     ].join('\r\n'));
     
     for (var i = 0; i < times; i++) {
-        var chunks = chunky(msg);
+        var chunks = splitUp(msg);
         
         var n = updatePath(chunks, '/boop');
         t.equal(n, '/beepity'.length - '/boop'.length);
         t.equal(
-            chunks.map(String).join(''),
+            chunks.map(function (c) {
+                return String(c[0].slice(c[1],c[2]));
+            }).join(''),
             msg.toString().replace('/beepity', '/boop')
         );
     }
