@@ -4,7 +4,7 @@ var net = require('net');
 var EventEmitter = require('events').EventEmitter;
 
 test('destroy the socket during piping', function (t) {
-    t.plan(2);
+    t.plan(3);
     
     var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var p1 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
@@ -26,14 +26,16 @@ test('destroy the socket during piping', function (t) {
             c.write('\r\n');
             
             setTimeout(function () {
-                // writing to a closed socket shouldn't throw anymore
+                c.once('error', function (err) {
+                    t.ok(/socket is closed/.test(err.message));
+                });
                 c.write('a=3&b=4');
-            }, 50);
+            }, 300);
             
             setTimeout(function () {
                 t.pass();
                 c.end();
-            }, 100);
+            }, 350);
         });
     });
     
