@@ -24,8 +24,10 @@ var bouncy = module.exports = function (opts, cb) {
         });
         
         server.on('upgrade', function (req, sock, buf) {
-            var bounce = makeBounce(req, sock);
-            cb(req, bounce);
+            if (req.headers.upgrade || req.method === 'CONNECT') {
+                var bounce = makeBounce(req, sock);
+                cb(req, bounce);
+            }
         });
         
         return server;
