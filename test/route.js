@@ -1,5 +1,7 @@
 var test = require('tap').test;
 var http = require('http');
+http.globalAgent.maxSockets = Number.MAX_VALUE;
+
 var net = require('net');
 var bouncy = require('../');
 
