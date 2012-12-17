@@ -17,7 +17,7 @@ without doing anything special.
 
 ## route.js
 
-Route requests based on the host field
+Route requests based on the host field to servers on ports 8001 and 8002:
 
 ``` js
 var bouncy = require('bouncy');
