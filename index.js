@@ -27,6 +27,10 @@ var bouncy = module.exports = function (opts, cb) {
         if (req.headers.upgrade || req.method === 'CONNECT') {
             var bounce = makeBounce(req, sock);
             cb(req, bounce);
+            
+            sock.on('end', function () {
+                req.destroy();
+            });
         }
     });
     
@@ -36,7 +40,8 @@ var bouncy = module.exports = function (opts, cb) {
 
 function makeBounce (req, res) {
     var bounce = function (stream, opts) {
-        var bs = req.createRawStream();
+        var rs = req.createRawStream();
+        var ws = res.createRawStream && res.createRawStream() || res;
         
         if (!stream || !stream.write) {
             opts = parseArgs(arguments);
@@ -57,15 +62,15 @@ function makeBounce (req, res) {
                 req.connection.encrypted ? 'https' : 'http';
         }
         
-        insertHeaders(bs.buffers, opts.headers);
-        if (opts.path) updatePath(bs.buffers, opts.path);
+        insertHeaders(rs.buffers, opts.headers);
+        if (opts.path) updatePath(rs.buffers, opts.path);
         
         if (stream.writable) {
-            bs.pipe(stream);
-            stream.pipe(bs);
+            rs.pipe(stream);
+            stream.pipe(ws);
         }
         else if (opts.emitter) {
-            opts.emitter.emit('drop', bs);
+            opts.emitter.emit('drop', ws);
         }
         
         stream.on('error', function (err) {
