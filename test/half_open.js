@@ -15,7 +15,11 @@ var proxy = bouncy(function (req, res, bounce) {
 proxy.listen(0);
 
 var server = http.createServer(function (req, res) {
-    res.end('beep boop\n');
+    res.write('beep ');
+    
+    setTimeout(function () {
+        res.end('boop.');
+    }, 100);
 });
 server.listen(0);
 
@@ -27,9 +31,15 @@ test('half-open', function (t) {
     c.on('data', function (buf) { data += buf });
     c.on('end', function () {
         var lines = data.split(/\r?\n/);
-        t.ok(lines.some(function (line) {
-            return line === 'beep boop';
-        }));
+        for (var ix = 0; lines[ix] !== ''; ix++);
+        
+        t.same(lines.slice(ix), [
+            '5',
+            'beep ',
+            '5',
+            'boop.',
+            '0'
+        ]);
     });
     
     c.end([
