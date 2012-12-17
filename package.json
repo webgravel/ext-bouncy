@@ -1,7 +1,7 @@
 {
     "name" : "bouncy",
     "description" : "route incoming http requests to http servers",
-    "version" : "2.0.0",
+    "version" : "2.0.1",
     "repository" : {
         "type" : "git",
         "url" : "git://github.com/substack/bouncy.git"
@@ -21,7 +21,7 @@
         "test" : "tap test/*.js"
     },
     "dependencies" : {
-        "http-raw" : "0.2.0"
+        "http-raw" : "~1.0.0"
     },
     "devDependencies" : {
         "tap" : "~0.3.3",
