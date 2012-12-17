@@ -54,9 +54,12 @@ test('bounce', function (t) {
         var opts = {
             method : 'GET',
             host : 'localhost',
-            headers : { host : name + '.example.com' },
+            headers : {
+                host : name + '.example.com',
+                connection : 'close'
+            },
             port : p2,
-            path : '/'
+            path : '/',
         };
         var req = http.request(opts, function (res) {
             t.equal(res.statusCode, 200)

@@ -34,7 +34,8 @@ test('https', function (t) {
         var opts = {
             host : 'localhost',
             port : p1,
-            path : '/beep'
+            path : '/beep',
+            headers : { connection : 'close' }
         };
         
         https.get(opts, function (res) {

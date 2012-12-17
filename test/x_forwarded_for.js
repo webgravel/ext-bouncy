@@ -26,7 +26,8 @@ test('x-forwarded-for', function (t) {
             method : 'GET',
             host : 'localhost',
             port : p1,
-            path : '/'
+            path : '/',
+            headers : { connection : 'close' }
         };
         var req = http.request(opts, function (res) {
             t.equal(res.statusCode, 200)
