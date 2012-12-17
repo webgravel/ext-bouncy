@@ -66,7 +66,7 @@ function makeBounce (req, res) {
         if (opts.path) updatePath(rs.buffers, opts.path);
         
         if (stream.writable) {
-            rs.pipe(stream);
+            rs.pipe(stream, { end : false });
             stream.pipe(ws);
         }
         else if (opts.emitter) {

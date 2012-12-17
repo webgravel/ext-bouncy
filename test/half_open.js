@@ -33,12 +33,14 @@ test('half-open', function (t) {
         var lines = data.split(/\r?\n/);
         for (var ix = 0; lines[ix] !== ''; ix++);
         
-        t.same(lines.slice(ix), [
+        t.same(lines.slice(ix+1), [
             '5',
             'beep ',
             '5',
             'boop.',
-            '0'
+            '0',
+            '',
+            ''
         ]);
     });
     
