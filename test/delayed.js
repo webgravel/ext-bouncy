@@ -7,8 +7,11 @@ test('bounce', function (t) {
     var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s0 = http.createServer(function (req, res) {
         res.setHeader('content-type', 'text/plain');
-        res.write('beep boop');
-        res.end();
+        res.write('beep ');
+        setTimeout(function () {
+            res.write('boop');
+            res.end();
+        }, 100);
     });
     s0.listen(p0, connect);
     
