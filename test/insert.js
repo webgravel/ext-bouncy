@@ -1,9 +1,9 @@
 var test = require('tap').test;
-var insertHeaders = require('../lib/insert_headers');
+var insert = require('../lib/insert');
 var chunky = require('chunky');
 
 test('insert headers', function (t) {
-    t.plan(50 * 3);
+    t.plan(2 * 50);
     var msg = [
         'POST / HTTP/1.1',
         'Host: beep',
@@ -15,16 +15,23 @@ test('insert headers', function (t) {
         var bufs = chunky(msg);
         t.equal(bufs.map(String).join(''), msg);
         
-        var n = insertHeaders(bufs, { foo : 'bar', baz : 'quux' });
-        t.equal(n, 'foo: bar\r\nbaz: quux\r\n'.length);
-        t.equal(bufs.map(String).join(''), [
-            'POST / HTTP/1.1',
-            'Host: beep',
-            'foo: bar',
-            'baz: quux',
-            '',
-            'sound=boop'
-        ].join('\r\n'));
+        var s = insert({ headers: { foo : 'bar', baz : 'quux' } });
+        var data = '';
+        s.on('data', function (buf) { data += buf });
+        s.on('end', function () {
+            t.equal(data, [
+                'POST / HTTP/1.1',
+                'Host: beep',
+                'foo: bar',
+                'baz: quux',
+                '',
+                'sound=boop'
+            ].join('\r\n'));
+        });
+        
+        for (var j = 0; j < bufs.length; j++) {
+            s.write(bufs[j]);
+        }
+        s.end();
     }
-    t.end();
 });
