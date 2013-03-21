@@ -27,10 +27,11 @@ module.exports = function (cb) {
             src.on('error', destroy);
             dst.on('error', destroy);
             
-            (args.headers || args.method || args.path
+            var s = args.headers || args.method || args.path
                 ? src.pipe(insert(args))
                 : src
-            ).pipe(dst).pipe(req.connection);
+            ;
+            s.pipe(dst).pipe(req.connection);
             
             src.resume();
         };
