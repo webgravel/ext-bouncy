@@ -44,7 +44,7 @@ test('half-open', function (t) {
         ]);
     });
     
-    c.end([
+    c.write([
         'GET / HTTP/1.1',
         'Host: robot',
         'Connection: close',
