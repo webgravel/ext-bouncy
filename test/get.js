@@ -1,7 +1,7 @@
 var test = require('tap').test;
 var bouncy = require('../');
 var http = require('http');
-var Stream = require('./lib/stream');
+var through = require('through');
 
 test('GET with http', function (t) {
     var port = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
@@ -9,17 +9,20 @@ test('GET with http', function (t) {
     var s = bouncy(function (req, bounce) {
         t.equal(req.headers.host, 'localhost:' + port);
         
-        var stream = Stream();
+        var stream = through(
+            function () {},
+            function () {}
+        );
         bounce(stream);
         
-        stream.write([
+        stream.emit('data', [
             'HTTP/1.1 200 200 OK',
             'Content-Type: text/plain',
             'Connection: close',
             '',
             'oh hello'
         ].join('\r\n'));
-        stream.end();
+        stream.emit('end');
     });
     
     s.listen(port, function () {
