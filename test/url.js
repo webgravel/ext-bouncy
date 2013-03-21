@@ -19,7 +19,6 @@ test('update url', function (t) {
         var data = '';
         s.on('data', function (buf) { data += buf });
         s.on('end', function () {
-console.dir(data);
             t.equal(
                 data,
                 msg.toString().replace('/beepity', '/boop')
