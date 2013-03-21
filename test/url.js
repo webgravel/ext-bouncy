@@ -1,10 +1,10 @@
 var test = require('tap').test;
-var updatePath = require('../lib/update_path');
+var insert = require('../lib/insert.js');
 var chunky = require('chunky');
 
 test('update url', function (t) {
     var times = 50;
-    t.plan(times * 2);
+    t.plan(times);
     var msg = new Buffer([
         'POST /beepity HTTP/1.1',
         'Host: beep',
@@ -12,15 +12,23 @@ test('update url', function (t) {
         'sound=boop'
     ].join('\r\n'));
     
-    for (var i = 0; i < times; i++) {
+    for (var i = 0; i < times; i++) (function () {
         var chunks = chunky(msg);
         
-        var n = updatePath(chunks, '/boop');
-        t.equal(n, '/beepity'.length - '/boop'.length);
-        t.equal(
-            chunks.map(String).join(''),
-            msg.toString().replace('/beepity', '/boop')
-        );
-    }
-    t.end();
+        var s = insert({ path: '/boop' });
+        var data = '';
+        s.on('data', function (buf) { data += buf });
+        s.on('end', function () {
+console.dir(data);
+            t.equal(
+                data,
+                msg.toString().replace('/beepity', '/boop')
+            );
+        });
+        
+        for (var i = 0; i < chunks.length; i++) {
+            s.write(chunks[i]);
+        }
+        s.end();
+    })();
 });
