@@ -1,7 +1,7 @@
 var http = require('http');
 var through = require('through');
 var parseArgs = require('./lib/parse_args.js');
-var insertHeaders = require('./lib/insert_headers');
+var insert = require('./lib/insert');
 
 module.exports = function (cb) {
     var server = http.createServer();
@@ -14,7 +14,7 @@ module.exports = function (cb) {
     server.on('request', function (req, res) {
         var src = req.connection._bouncyStream;
         var bounce = function (dst) {
-            var args;
+            var args = {};
             if (!dst || typeof dst.pipe !== 'function') {
                 args = parseArgs(arguments);
                 dst = args.stream;
@@ -27,8 +27,8 @@ module.exports = function (cb) {
             src.on('error', destroy);
             dst.on('error', destroy);
             
-            (args.headers
-                ? src.pipe(insertHeaders(args.headers))
+            (args.headers || args.method || args.path
+                ? src.pipe(insert(args))
                 : src
             ).pipe(dst).pipe(req.connection);
             
