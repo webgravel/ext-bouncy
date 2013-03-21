@@ -1,6 +1,7 @@
 var http = require('http');
 var through = require('through');
 var parseArgs = require('./lib/parse_args.js');
+var insertHeaders = require('./lib/insert_headers');
 
 module.exports = function (cb) {
     var server = http.createServer();
@@ -13,8 +14,10 @@ module.exports = function (cb) {
     server.on('request', function (req, res) {
         var src = req.connection._bouncyStream;
         var bounce = function (dst) {
+            var args;
             if (!dst || typeof dst.pipe !== 'function') {
-                dst = parseArgs(arguments);
+                args = parseArgs(arguments);
+                dst = args.stream;
             }
             
             function destroy () {
@@ -24,7 +27,11 @@ module.exports = function (cb) {
             src.on('error', destroy);
             dst.on('error', destroy);
             
-            src.pipe(dst).pipe(req.connection);
+            (args.headers
+                ? src.pipe(insertHeaders(args.headers))
+                : src
+            ).pipe(dst).pipe(req.connection);
+            
             src.resume();
         };
         
