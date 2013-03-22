@@ -43,6 +43,11 @@ If the arity of `cb` is 3, you'll get the response object `res` in
 `cb(req, res, bounce)`.
 Otherwise you just get `cb(req, bounce)`.
 
+If you are using more than one SSL cert, add `opts.SNICallback`.
+See the example http-https-sni.js and the
+[nodejs tls page](http://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener)
+for details.
+
 ## bounce(stream, opts={})
 
 Call this function when you're ready to bounce the request to a stream.
