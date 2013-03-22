@@ -27,6 +27,7 @@
         "tap" : "~0.4.0",
         "websocket-server" : "~1.4.04",
         "wsclient" : "~0.2.0",
+        "lazy": "~1.0.8",
         "chunky" : "~0.0.0"
     },
     "license" : "MIT",
