@@ -37,6 +37,7 @@ module.exports = function (opts, cb) {
                 args = parseArgs(arguments);
                 dst = args.stream;
             }
+            if (!dst) dst = through();
             
             function destroy () {
                 src.destroy();
@@ -52,6 +53,7 @@ module.exports = function (opts, cb) {
             s.pipe(dst).pipe(req.connection);
             
             nextTick(function () { src.resume() });
+            return dst;
         };
         
         if (cb.length === 2) cb(req, bounce)
