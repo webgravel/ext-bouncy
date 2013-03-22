@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 var configFile = process.argv[2];
 var port = parseInt(process.argv[3], 10);
+var fs = require('fs');
 
 if (!configFile || !port) {
-    console.error('Usage: bouncy [routes.json] [port]');
-    process.exit(1);
+    fs.createReadStream(__dirname + '/usage.txt')
+        .pipe(process.stdout)
+        .on('end', process.exit.bind(null, 1))
+    ;
+    return;
 }
 
-var fs = require('fs');
 var config = JSON.parse(fs.readFileSync(configFile));
 
 var bouncy = require('../');
