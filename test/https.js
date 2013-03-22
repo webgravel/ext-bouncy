@@ -24,7 +24,10 @@ test('https', function (t) {
     
     var p1 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s1 = bouncy(sOpts, function (req, bounce) {
-        bounce(p0);
+        bounce({
+            port: p0,
+            headers: { 'x-forwarded-proto': 'https' }
+        });
     });
     s1.listen(p1, connect);
     
