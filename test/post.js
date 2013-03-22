@@ -20,6 +20,7 @@ test('POST with http', function (t) {
                 alive = false;
             }
         });
+        bounce(stream);
         
         stream.queue([
             'HTTP/1.1 200 200 OK',
@@ -28,8 +29,6 @@ test('POST with http', function (t) {
             '',
             'oh hello'
         ].join('\r\n'));
-        
-        bounce(stream);
     });
     
     s.listen(port, function () {
@@ -43,9 +42,7 @@ test('POST with http', function (t) {
             t.equal(res.headers['content-type'], 'text/plain');
             
             var data = '';
-            res.on('data', function (buf) {
-                data += buf.toString();
-            });
+            res.on('data', function (buf) { data += buf });
             
             res.on('end', function () {
                 t.equal(data, 'oh hello');

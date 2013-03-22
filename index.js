@@ -3,6 +3,10 @@ var https = require('https');
 var through = require('through');
 var parseArgs = require('./lib/parse_args.js');
 var insert = require('./lib/insert');
+var nextTick = typeof setImmediate !== 'undefined'
+    ? setImmediate
+    : process.nextTick
+;
 
 module.exports = function (opts, cb) {
     if (typeof opts === 'function') {
@@ -47,7 +51,7 @@ module.exports = function (opts, cb) {
             ;
             s.pipe(dst).pipe(req.connection);
             
-            src.resume();
+            nextTick(function () { src.resume() });
         };
         
         if (cb.length === 2) cb(req, bounce)
