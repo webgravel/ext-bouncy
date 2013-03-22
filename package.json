@@ -21,11 +21,10 @@
         "test" : "tap test/*.js"
     },
     "dependencies" : {
-        "http-raw" : "~2.1.0"
+        "through" : "~2.2.7"
     },
     "devDependencies" : {
-        "tap" : "~0.3.3",
-        "lazy" : "1.0.x",
+        "tap" : "~0.4.0",
         "websocket-server" : "~1.4.04",
         "wsclient" : "~0.2.0",
         "chunky" : "~0.0.0"

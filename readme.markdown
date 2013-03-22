@@ -1,14 +1,8 @@
 # bouncy
 
-route http requests to incoming http servers
+pipe raw http traffic from incoming http requests to remote endpoints
 
-bouncy uses [http-raw](http://github.com/substack/http-raw) to extend the core
-node http apis with fully transparent streaming without resulting to
-re-normalizing the requests.
-
-Because bouncy doesn't touch the underlying data unless you explicitly tell it
-to, upgraded connections like websockets just work without doing anything
-special.
+**this module presently only works on node 0.8**
 
 [![build status](https://secure.travis-ci.org/substack/bouncy.png)](http://travis-ci.org/substack/bouncy)
 
@@ -37,30 +31,6 @@ var server = bouncy(function (req, res, bounce) {
 });
 server.listen(8000);
 ```
-
-
-# command-line
-
-Just create a `routes.json` file like this:
-
-````javascript
-{
-    "beep.example.com" : 8000,
-    "boop.example.com" : 8001
-}
-````
-
-Then point the `bouncy` command at this `routes.json` file and give it a port to
-listen on:
-
-```
-bouncy routes.json 80
-```
-
-The `routes.json` file should just map host names to host/port combos.
-Use a colon-separated string to specify a host and port in a route.
-
-Use `""` for the host as a default route.
 
 # var server = bouncy(opts={}, cb)
 
