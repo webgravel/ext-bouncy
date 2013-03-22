@@ -24,8 +24,8 @@ module.exports = function (opts, cb) {
         : http.createServer()
     );
     server.on(connectionEvent, function (stream) {
-        var src = stream._bouncyStream = through();
-        src.pause();
+        var buffer = [];
+        var src = stream._bouncyStream = stealthBuffer();
         stream.pipe(src);
     });
     
@@ -56,7 +56,7 @@ module.exports = function (opts, cb) {
             ;
             s.pipe(dst).pipe(req.connection);
             
-            nextTick(function () { src.resume() });
+            nextTick(function () { src._resume() });
             return dst;
         };
         
@@ -64,3 +64,25 @@ module.exports = function (opts, cb) {
         else cb(req, res, bounce)
     }
 };
+
+function stealthBuffer () {
+    // the raw_ok test doesn't pass without this shim
+    // instead of just using through()
+    
+    var tr = through(write, end);
+    var buffer = [];
+    tr._resume = function () {
+        buffer.forEach(tr.queue.bind(tr));
+        buffer = undefined;
+    };
+    return tr;
+    
+    function write (buf) {
+        if (buffer) buffer.push(buf)
+        else this.queue(buf)
+    }
+    function end () {
+        if (buffer) buffer.push(null)
+        else this.queue(null)
+    }
+}
