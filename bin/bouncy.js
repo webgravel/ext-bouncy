@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-var configFile = process.argv[2];
-var port = parseInt(process.argv[3], 10);
+var argv = require('optimist').argv;
+var configFile = argv.config || argv._.shift();
+var port = parseInt(argv.port || argv._.shift(), 10);
+var address = argv.address || argv._.shift() || '0.0.0.0';
 var fs = require('fs');
 
 if (!configFile || !port) {
@@ -47,5 +49,4 @@ var server = bouncy(function (req, res, bounce) {
         res.write('host not found\r\n');
         res.end();
     }
-});
-server.listen(port);
+}).listen(port, address);

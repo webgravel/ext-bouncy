@@ -95,6 +95,10 @@ The `routes.json` file should just map host names to host/port combos. Use a
 colon-separated string to specify a host and port in a route.
 
 Use `""` for the host as a default route.
+
+You can optionally specify a listen address as the third parameter or with
+`--address`. It defaults to `0.0.0.0`. Specify `::` to listen on both IPv4 and
+IPv6 addresses.
 ```
 
 # install

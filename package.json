@@ -21,7 +21,8 @@
         "test" : "tap test/*.js"
     },
     "dependencies" : {
-        "through" : "~2.2.7"
+        "through": "~2.2.7",
+        "optimist": "~0.3.5"
     },
     "devDependencies" : {
         "tap" : "~0.4.0",
