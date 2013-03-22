@@ -1,11 +1,25 @@
 var http = require('http');
+var https = require('https');
 var through = require('through');
 var parseArgs = require('./lib/parse_args.js');
 var insert = require('./lib/insert');
 
-module.exports = function (cb) {
-    var server = http.createServer();
-    server.on('connection', function (stream) {
+module.exports = function (opts, cb) {
+    if (typeof opts === 'function') {
+        cb = opts;
+        opts = {};
+    }
+    if (!opts) opts = {};
+    if (typeof opts === 'object' && opts.listen) opts = { server: opts };
+    
+    var ssl = Boolean(opts.key && opts.cert);
+    var connectionEvent = ssl ? 'secureConnection' : 'connection';
+    
+    var server = opts.server || (ssl
+        ? https.createServer(opts)
+        : http.createServer()
+    );
+    server.on(connectionEvent, function (stream) {
         var src = stream._bouncyStream = through();
         src.pause();
         stream.pipe(src);
