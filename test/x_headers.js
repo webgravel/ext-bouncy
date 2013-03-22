@@ -18,7 +18,16 @@ test('check for x-forwarded default headers', function (t) {
     s0.listen(p0, connect);
     
     var p1 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
-    var s1 = bouncy(function (req, bounce) { bounce(p0) });
+    var s1 = bouncy(function (req, bounce) {
+        bounce({
+            port: p0,
+            headers: {
+                'x-forwarded-for': '127.0.0.1',
+                'x-forwarded-port': p1.toString(),
+                'x-forwarded-proto': 'http'
+            }
+        });
+    });
     s1.listen(p1, connect);
     
     var connected = 0;
