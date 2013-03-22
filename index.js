@@ -29,7 +29,11 @@ module.exports = function (opts, cb) {
         stream.pipe(src);
     });
     
-    server.on('request', function (req, res) {
+    server.on('upgrade', onrequest);
+    server.on('request', onrequest);
+    return server;
+    
+    function onrequest (req, res) {
         var src = req.connection._bouncyStream;
         var bounce = function (dst) {
             var args = {};
@@ -58,6 +62,5 @@ module.exports = function (opts, cb) {
         
         if (cb.length === 2) cb(req, bounce)
         else cb(req, res, bounce)
-    });
-    return server;
+    }
 };
