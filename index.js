@@ -24,7 +24,6 @@ module.exports = function (opts, cb) {
         : http.createServer()
     );
     server.on(connectionEvent, function (stream) {
-        var buffer = [];
         var src = stream._bouncyStream = stealthBuffer();
         stream.pipe(src);
     });
