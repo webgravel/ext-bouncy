@@ -1,7 +1,7 @@
 var test = require('tap').test;
 var bouncy = require('../');
 var http = require('http');
-var Stream = require('net').Stream;
+var through = require('through');
 
 test('POST with http', function (t) {
     var port = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
@@ -10,31 +10,26 @@ test('POST with http', function (t) {
         t.equal(req.headers.host, 'localhost:' + port);
         
         var alive = true;
-        
-        var stream = new Stream;
-        stream.writable = true;
-        stream.readable = true;
-        
         var data = '';
-        stream.write = function (buf) {
+        var stream = through(function (buf) {
             data += buf.toString();
             
             if (alive && data.match(/pow!/)) {
                 t.ok(true, 'got post data');
-                stream.emit('end');
+                stream.queue(null);
                 alive = false;
             }
-        };
+        });
         
-        bounce(stream);
-        
-        stream.emit('data', [
+        stream.queue([
             'HTTP/1.1 200 200 OK',
             'Content-Type: text/plain',
             'Connection: close',
             '',
             'oh hello'
         ].join('\r\n'));
+        
+        bounce(stream);
     });
     
     s.listen(port, function () {
