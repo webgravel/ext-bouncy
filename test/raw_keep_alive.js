@@ -1,39 +1,44 @@
 var test = require('tap').test;
 var bouncy = require('../');
 var net = require('net');
+var http = require('http');
 var through = require('through');
 
 test('raw keep alive', function (t) {
-    t.plan(1);
+    t.plan(5);
     t.on('end', function () {
-        s.close();
+        s0.close();
+        s1.close();
     });
-    var sent = false;
     
-    var s = bouncy(function (req, res, bounce) {
-        var tr = through(function () {}, function () {});
-        bounce(tr);
-        
-        tr.queue([
-            'HTTP/1.1 200 OK',
-            '',
-            ''
-        ].join('\r\n'));
-        
+    var s0 = bouncy(function (req, res, bounce) {
+        // only the first request should pass through the proxy
+        t.equal(req.url, '/a');
+        bounce(s1.address().port);
+    });
+    
+    var u = [ '/a', '/b', '/c' ];
+    var s1 = http.createServer(function (req, res) {
+        t.equal(req.url, u.shift());
         setTimeout(function () {
-            tr.queue(req.headers.host.toUpperCase());
-            tr.queue(null);
+            res.end(req.url.slice(1).toUpperCase());
         }, 75);
     });
     
-    s.listen(0, function () {
-        var port = s.address().port;
+    s0.listen(0, ready);
+    s1.listen(0, ready);
+    
+    var pending = 2;
+    function ready () {
+        if (--pending !== 0) return;
+        
+        var port = s0.address().port;
         var c = net.connect(port);
         
         setTimeout(function () {
             c.write([
                 'GET /a HTTP/1.1',
-                'Host: a',
+                'Host: z',
                 'Connection: keep-alive',
                 '',
                 ''
@@ -43,7 +48,7 @@ test('raw keep alive', function (t) {
         setTimeout(function () {
             c.write([
                 'GET /b HTTP/1.1',
-                'Host: b',
+                'Host: z',
                 'Connection: keep-alive',
                 '',
                 ''
@@ -53,7 +58,7 @@ test('raw keep alive', function (t) {
         setTimeout(function () {
             c.write([
                 'GET /c HTTP/1.1',
-                'Host: c',
+                'Host: z',
                 'Connection: close',
                 '',
                 ''
@@ -63,7 +68,10 @@ test('raw keep alive', function (t) {
         var data = '';
         c.on('data', function (buf) { data += buf });
         c.on('end', function () {
-            console.log(data);
+            t.deepEqual(
+                data.split('\n').filter(/^[A-Z]$/),
+                [ 'A', 'B', 'C' ]
+            );
         });
-    });
+    }
 });
