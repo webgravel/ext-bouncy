@@ -5,6 +5,11 @@ var wc = require('wsclient');
 
 test('ws', function (t) {
     t.plan(4);
+    t.on('end', function () {
+        s0.close();
+        s1.close();
+        setTimeout(process.exit, 100); // whatever
+    });
     
     var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s0 = ws.createServer();
@@ -37,12 +42,6 @@ test('ws', function (t) {
             setTimeout(function () {
                 c.send('boop');
             }, 15);
-        });
-        
-        c.on('close', function () {
-            s0.close();
-            s1.close();
-            t.end();
         });
         
         var msgs = [ 'ytipeeb', 'poob' ];
