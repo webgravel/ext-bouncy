@@ -67,7 +67,7 @@ module.exports = function (opts, cb) {
 
 function stealthBuffer () {
     // the raw_ok test doesn't pass without this shim
-    // instead of just using through()
+    // instead of just using through() and then immediately calling .pause()
     
     var tr = through(write, end);
     var buffer = [];
