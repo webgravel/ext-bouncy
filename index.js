@@ -16,7 +16,7 @@ module.exports = function (opts, cb) {
     if (!opts) opts = {};
     if (typeof opts === 'object' && opts.listen) opts = { server: opts };
     
-    var ssl = Boolean(opts.key && opts.cert);
+    var ssl = Boolean(opts.key || opts.pfx);
     var connectionEvent = ssl ? 'secureConnection' : 'connection';
     
     var server = opts.server || (ssl

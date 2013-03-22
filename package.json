@@ -1,7 +1,7 @@
 {
     "name" : "bouncy",
     "description" : "route incoming http requests to http servers",
-    "version" : "3.1.0",
+    "version" : "3.1.1",
     "repository" : {
         "type" : "git",
         "url" : "git://github.com/substack/bouncy.git"
