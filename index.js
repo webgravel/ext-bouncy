@@ -34,6 +34,9 @@ module.exports = function (opts, cb) {
     
     function onrequest (req, res) {
         var src = req.connection._bouncyStream;
+        if (src._handled) return;
+        src._handled = true;
+        
         var bounce = function (dst) {
             var args = {};
             if (!dst || typeof dst.pipe !== 'function') {

@@ -69,7 +69,9 @@ test('raw keep alive', function (t) {
         c.on('data', function (buf) { data += buf });
         c.on('end', function () {
             t.deepEqual(
-                data.split('\n').filter(/^[A-Z]$/),
+                data.split(/\r?\n/).filter(function (line) {
+                    return /^[A-Z]$/.test(line)
+                }),
                 [ 'A', 'B', 'C' ]
             );
         });
