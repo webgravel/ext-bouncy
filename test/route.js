@@ -9,37 +9,34 @@ test('bounce', function (t) {
     var iters = 50;
     t.plan(4 * iters);
     
-    var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s0 = http.createServer(function (req, res) {
         res.setHeader('content-type', 'text/plain');
         res.write('beep!');
         res.end();
     });
-    s0.listen(p0, connect);
+    s0.listen(connect);
     
-    var p1 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s1 = http.createServer(function (req, res) {
         res.setHeader('content-type', 'text/plain');
         res.write('boop!');
         res.end();
     });
-    s1.listen(p1, connect);
+    s1.listen(connect);
     
-    var p2 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s2 = bouncy(function (req, bounce) {
         if (req.headers.host === 'beep.example.com') {
-            var s = bounce(p0);
+            var s = bounce(s0.address().port);
             t.ok(s instanceof net.Stream, 'bounce() returns a stream');
         }
         else if (req.headers.host === 'boop.example.com') {
-            var s = bounce(p1);
+            var s = bounce(s1.address().port);
             t.ok(s instanceof net.Stream, 'bounce() returns a stream');
         }
         else {
             t.fail(req.headers.host);
         }
     });
-    s2.listen(p2, connect);
+    s2.listen(connect);
     
     var connected = 0;
     function connect () {
@@ -58,7 +55,7 @@ test('bounce', function (t) {
                 host : name + '.example.com',
                 connection : 'close'
             },
-            port : p2,
+            port : s2.address().port,
             path : '/',
         };
         var req = http.request(opts, function (res) {

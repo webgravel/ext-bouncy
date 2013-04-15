@@ -3,7 +3,6 @@ var bouncy = require('../');
 var net = require('net');
 
 test('raw with a host', function (t) {
-    var port = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     t.plan(2);
     var sent = false;
     
@@ -15,8 +14,8 @@ test('raw with a host', function (t) {
         s.close();
     });
     
-    s.listen(port, function () {
-        var c = net.createConnection(port, function () {
+    s.listen(function () {
+        var c = net.createConnection(s.address().port, function () {
             c.write('GET /lul HT');
             setTimeout(function () {
                 c.write('TP/1.1\r\nHo');

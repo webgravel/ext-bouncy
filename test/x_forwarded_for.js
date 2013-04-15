@@ -4,20 +4,20 @@ var net = require('net');
 var bouncy = require('../');
 
 test('x-forwarded-for', function (t) {
-    var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s0 = http.createServer(function (req, res) {
         res.setHeader('content-type', 'text/plain');
         res.write('beep boop');
         t.equal(req.headers['x-forwarded-for'], '1.1.1.1');
         res.end();
     });
-    s0.listen(p0, connect);
+    s0.listen(connect);
     
-    var p1 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s1 = bouncy(function (req, bounce) {
-        bounce(p0, { headers : { 'x-forwarded-for' : '1.1.1.1' } });
+        bounce(s0.address().port, {
+            headers : { 'x-forwarded-for' : '1.1.1.1' }
+        });
     });
-    s1.listen(p1, connect);
+    s1.listen(connect);
     
     var connected = 0;
     function connect () {
@@ -25,7 +25,7 @@ test('x-forwarded-for', function (t) {
         var opts = {
             method : 'GET',
             host : 'localhost',
-            port : p1,
+            port : s1.address().port,
             path : '/',
             headers : { connection : 'close' }
         };

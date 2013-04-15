@@ -5,14 +5,11 @@ var net = require('net');
 var lazy = require('lazy');
 
 test('chunked transfers should be transparent', function (t) {
-    var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
-    var p1 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
-    
     t.plan(2);
     
     var s0 = bouncy(function (req, bounce) {
         t.equal(req.headers.host, 'beepity.boop');
-        bounce(p1);
+        bounce(s1.address().port);
     });
     
     var s1 = net.createServer(function (c) {
@@ -43,14 +40,14 @@ test('chunked transfers should be transparent', function (t) {
         }, 25);
     });
     
-    s1.listen(p1, connect);
-    s0.listen(p0, connect);
+    s1.listen(connect);
+    s0.listen(connect);
     
     var connected = 0;
     function connect () {
         if (++connected !== 2) return;
         
-        var c = net.createConnection(p0, function () {
+        var c = net.connect(s0.address().port, function () {
             c.write([
                 'GET / HTTP/1.1',
                 'Host: beepity.boop',

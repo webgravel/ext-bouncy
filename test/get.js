@@ -4,10 +4,9 @@ var http = require('http');
 var through = require('through');
 
 test('GET with http', function (t) {
-    var port = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     t.plan(3);
     var s = bouncy(function (req, bounce) {
-        t.equal(req.headers.host, 'localhost:' + port);
+        t.equal(req.headers.host, 'localhost:' + s.address().port);
         
         var stream = through(
             function () {},
@@ -25,11 +24,11 @@ test('GET with http', function (t) {
         stream.emit('end');
     });
     
-    s.listen(port, function () {
+    s.listen(function () {
         var opts = {
             method : 'GET',
             host : 'localhost',
-            port : port,
+            port : s.address().port,
             path : '/'
         };
         var req = http.request(opts, function (res) {

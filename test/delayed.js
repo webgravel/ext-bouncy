@@ -4,7 +4,6 @@ var net = require('net');
 var bouncy = require('../');
 
 test('bounce', function (t) {
-    var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s0 = http.createServer(function (req, res) {
         res.setHeader('content-type', 'text/plain');
         res.write('beep ');
@@ -13,15 +12,14 @@ test('bounce', function (t) {
             res.end();
         }, 100);
     });
-    s0.listen(p0, connect);
+    s0.listen(connect);
     
-    var p1 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s1 = bouncy(function (req, bounce) {
         setTimeout(function () {
-            bounce(net.connect(p0));
+            bounce(net.connect(s0.address().port));
         }, 100);
     });
-    s1.listen(p1, connect);
+    s1.listen(connect);
     
     var connected = 0;
     function connect () {
@@ -29,7 +27,7 @@ test('bounce', function (t) {
         var opts = {
             method : 'GET',
             host : 'localhost',
-            port : p1,
+            port : s1.address().port,
             path : '/beep',
             headers : { connection : 'close' }
         };

@@ -42,18 +42,18 @@ function testUrl (t, bouncer, target) {
     t.plan(4);
     if (!target) target = '/rewritten';
     
-    var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s0 = http.createServer(function (req, res) {
         t.equal(req.url, target);
         res.setHeader('content-type', 'text/plain');
         res.write('beep boop');
         res.end();
     });
-    s0.listen(p0, connect);
+    s0.listen(connect);
     
-    var p1 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
-    var s1 = bouncy(bouncer.bind(null, p0));
-    s1.listen(p1, connect);
+    var s1 = bouncy(function (req, res, bounce) {
+        bouncer(s0.address().port, req, bounce);
+    });
+    s1.listen(connect);
     
     var connected = 0;
     function connect () {
@@ -61,7 +61,7 @@ function testUrl (t, bouncer, target) {
         var opts = {
             method : 'GET',
             host : 'localhost',
-            port : p1,
+            port : s1.address().port,
             path : '/beep',
             headers : { connection : 'close' }
         };

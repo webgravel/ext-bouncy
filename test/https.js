@@ -12,7 +12,6 @@ var sOpts = {
 test('https', function (t) {
     t.plan(5);
     
-    var p0 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s0 = http.createServer(function (req, res) {
         res.setHeader('content-type', 'text/plain');
         res.write('beep boop');
@@ -20,23 +19,22 @@ test('https', function (t) {
         t.equal(req.headers['x-forwarded-proto'], 'https');
         res.end();
     });
-    s0.listen(p0, connect);
+    s0.listen(connect);
     
-    var p1 = Math.floor(Math.random() * (Math.pow(2,16) - 1e4) + 1e4);
     var s1 = bouncy(sOpts, function (req, bounce) {
         bounce({
-            port: p0,
+            port: s0.address().port,
             headers: { 'x-forwarded-proto': 'https' }
         });
     });
-    s1.listen(p1, connect);
+    s1.listen(connect);
     
     var connected = 0;
     function connect () {
         if (++connected !== 2) return;
         var opts = {
             host : 'localhost',
-            port : p1,
+            port : s1.address().port,
             path : '/beep',
             headers : { connection : 'close' }
         };
