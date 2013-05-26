@@ -2,8 +2,6 @@
 
 pipe raw http traffic from incoming http requests to remote endpoints
 
-**this module presently only works on node 0.8**
-
 [![build status](https://secure.travis-ci.org/substack/bouncy.png)](http://travis-ci.org/substack/bouncy)
 
 ![trampoline](http://substack.net/images/trampoline.png)
