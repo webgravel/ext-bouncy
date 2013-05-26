@@ -21,15 +21,16 @@
         "test" : "tap test/*.js"
     },
     "dependencies" : {
-        "through": "~2.2.7",
+        "through": "~2.3.4",
         "optimist": "~0.3.5"
     },
     "devDependencies" : {
         "tap" : "~0.4.0",
         "websocket-server" : "~1.4.04",
         "wsclient" : "~0.2.0",
-        "lazy": "~1.0.8",
-        "chunky" : "~0.0.0"
+        "chunky" : "~0.0.0",
+        "concat-stream": "~1.0.0",
+        "split": "~0.2.5"
     },
     "license" : "MIT",
     "author" : {

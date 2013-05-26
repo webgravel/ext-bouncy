@@ -2,7 +2,9 @@ var test = require('tap').test;
 var bouncy = require('../');
 var http = require('http');
 var net = require('net');
-var lazy = require('lazy');
+var split = require('split');
+var concat = require('concat-stream');
+var through = require('through');
 
 test('chunked transfers should be transparent', function (t) {
     t.plan(2);
@@ -13,8 +15,11 @@ test('chunked transfers should be transparent', function (t) {
     });
     
     var s1 = net.createServer(function (c) {
-        lazy(c).lines.map(String).forEach(function (line) {
-            if (line === '' || line === '\r') {
+        var sentHeader = false;
+        c.pipe(split()).pipe(through(function (buf) {
+            var line = String(buf);
+            if (!sentHeader && line === '' || line === '\r') {
+                sentHeader = true;
                 c.write([
                     'HTTP/1.1 200 200 OK',
                     'Content-Type: text/plain',
@@ -24,7 +29,7 @@ test('chunked transfers should be transparent', function (t) {
                     ''
                 ].join('\r\n'));
             }
-        });
+        }));
         
         var chunks = [
             function () { c.write('4\r\nabcd\r\n') },
@@ -55,26 +60,27 @@ test('chunked transfers should be transparent', function (t) {
                 ''
             ].join('\r\n'));
             
-            lazy(c).lines.map(String).join(function (lines) {
-                t.deepEqual(lines, [
-                    'HTTP/1.1 200 200 OK\r',
-                    'Content-Type: text/plain\r',
-                    'Transfer-Encoding: chunked\r',
-                    'Connection: close\r',
-                    '\r',
-                    '4\r',
-                    'abcd\r',
-                    '5\r',
-                    'efghi\r',
-                    '7\r',
-                    'jklmnop\r',
-                    '0\r'
-                ]);
+            c.pipe(concat(function (body) {
+                t.equal(body.toString(), [
+                    'HTTP/1.1 200 200 OK',
+                    'Content-Type: text/plain',
+                    'Transfer-Encoding: chunked',
+                    'Connection: close',
+                    '',
+                    '4',
+                    'abcd',
+                    '5',
+                    'efghi',
+                    '7',
+                    'jklmnop',
+                    '0',
+                    ''
+                ].join('\r\n'));
                 
                 t.end();
                 s0.close();
                 s1.close();
-            });
+            }));
         });
     }
 });
