@@ -25,7 +25,25 @@ module.exports = function (opts, cb) {
     );
     server.on(connectionEvent, function (stream) {
         var src = stream._bouncyStream = stealthBuffer();
-        stream.pipe(src);
+        
+        // hack to work around a node 0.10 bug:
+        // https://github.com/joyent/node/commit/e11668b244ee62d9997d4871f368075b8abf8d45
+        if (/^v0\.10\.\d+$/.test(process.version)) {
+            var ondata = stream.ondata;
+            var onend = stream.onend;
+            
+            stream.ondata = function (buf, i, j) {
+                var res = ondata(buf, i, j);
+                src.write(buf.slice(i, j));
+                return res;
+            };
+            stream.onend = function () {
+                var res = onend();
+                src.end();
+                return res;
+            };
+        }
+        else stream.pipe(src);
     });
     
     server.on('upgrade', onrequest);
